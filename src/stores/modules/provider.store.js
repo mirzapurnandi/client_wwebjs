@@ -3,12 +3,12 @@ import handleError from "@/utils/handleError";
 
 const state = () => ({
     dataProvider: [],
-    dataPagination: {}
+    dataPagination: {},
 });
 
 const mutations = {
     ASSIGN_PROVIDER(state, payload) {
-        state.dataUsers = payload.data;
+        state.dataProvider = payload.data;
         state.dataPagination = {
             total: payload.total,
             current_page: payload.current_page,
@@ -16,25 +16,27 @@ const mutations = {
             per_page: payload.per_page,
             from: payload.from,
             to: payload.to,
-        }
+        };
     },
 };
 
 const actions = {
-    getUserLists({ commit }, page = 1) {
+    getProviderLists({ commit }, page = 1) {
         return new Promise((resolve, reject) => {
-            api.get(`admin/provider?page=${page}`).then((response) => {
-                commit("ASSIGN_PROVIDER", response.data.result);
-                resolve(response.data);
-            }).catch((error) => handleError(error, commit, reject));
+            api.get(`admin/provider?page=${page}`)
+                .then((response) => {
+                    commit("ASSIGN_PROVIDER", response.data.result);
+                    resolve(response.data);
+                })
+                .catch((error) => handleError(error, commit, reject));
         });
     },
 };
 
 const getters = {
-    users: state => state.dataProvider,
-    pagination: state => state.dataPagination,
-}
+    providers: (state) => state.dataProvider,
+    pagination: (state) => state.dataPagination,
+};
 
 export default {
     namespaced: true,

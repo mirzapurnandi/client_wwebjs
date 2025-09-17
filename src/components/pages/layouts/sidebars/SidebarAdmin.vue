@@ -9,9 +9,18 @@
             </li>
 
             <li class="nav-item">
-                <router-link :to="{ name: 'admins.users.data' }" class="nav-link " :class="{ active: isActive('/admins/users') }">
+                <router-link :to="{ name: 'admins.users.data' }" class="nav-link "
+                    :class="{ active: isActive('/admins/users') }">
                     <i class="nav-icon fas fa-users"></i>
                     <p> List User </p>
+                </router-link>
+            </li>
+
+            <li class="nav-item">
+                <router-link :to="{ name: 'admins.providers.data' }" class="nav-link "
+                    :class="{ active: isActive('/admins/providers') }">
+                    <i class="nav-icon fas fa-users"></i>
+                    <p> List Provider </p>
                 </router-link>
             </li>
 
