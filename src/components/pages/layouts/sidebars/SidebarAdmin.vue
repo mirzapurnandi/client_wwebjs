@@ -19,7 +19,7 @@
             <li class="nav-item">
                 <router-link :to="{ name: 'admins.providers.data' }" class="nav-link "
                     :class="{ active: isActive('/admins/providers') }">
-                    <i class="nav-icon fas fa-users"></i>
+                    <i class="nav-icon fas fa-anchor"></i>
                     <p> List Provider </p>
                 </router-link>
             </li>
@@ -41,9 +41,9 @@ export default {
     methods: {
         ...mapActions('auth', ['signOut']),
 
-        isActive(path) {
-            if (path === '/') return this.$route.path === '/';
-            return this.$route.path === path;
+        isActive(basePath) {
+            const current = this.$route.path
+            return current === basePath || current.startsWith(basePath + '/')
         },
 
         logout(e) {

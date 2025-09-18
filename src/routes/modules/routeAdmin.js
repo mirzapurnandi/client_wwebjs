@@ -23,7 +23,14 @@ const routeAdmin = [
                 name: "admins.providers.data",
                 component: () =>
                     import("@/components/pages/admin/providers/Data.vue"),
-                meta: { title: "Data User" },
+                meta: { title: "Data Provider" },
+            },
+            {
+                path: ":id",
+                name: "admins.providers.data.detail",
+                component: () =>
+                    import("@/components/pages/admin/providers/DataDetail.vue"),
+                meta: { title: "Data Provider Detail" },
             },
         ],
     },

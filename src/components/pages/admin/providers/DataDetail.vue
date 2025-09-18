@@ -1,7 +1,7 @@
 <template>
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Data Provider</h3>
+            <h3 class="card-title">Provider {{ providers.name }}</h3>
             <div class="card-tools">
                 <div class="input-group input-group-sm" style="width: 150px;">
                     <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
@@ -32,34 +32,33 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(provider, index) in dataProviders" :key="index" :class="`provider_${provider.id}`">
+                    <tr v-for="(val, index) in dataProviderDetails" :key="index" :class="`provider_${val.id}`">
                         <td>{{ index + 1 }}</td>
-                        <td>{{ provider.name }}</td>
-                        <td>{{ provider.method }}</td>
-                        <td>{{ provider.url }}</td>
-                        <td>{{ provider.total }}</td>
-                        <td>{{ provider.count }}</td>
+                        <td>{{ val.license_key }}</td>
+                        <td>{{ val.info_hp }}</td>
+                        <td>{{ val.description }}</td>
+                        <td>{{ val.label }}</td>
                         <td>
-                            <span :class="['badge', provider.status ? 'badge-success' : 'badge-danger']">
-                                {{ provider.status ? 'Active' : 'Non-Active' }}
+                            <span :class="['badge', val.is_active ? 'badge-success' : 'badge-danger']">
+                                {{ provider.status ? 'Active' : 'Disable' }}
                             </span>
 
                         </td>
                         <td class="text-right">
-                            <router-link class="btn btn-primary btn-sm"
-                                :to="{ name: `admins.providers.data.detail`, params: { id: provider.id } }"> &nbsp; <i
-                                    class="fas fa-folder">
+                            <a class="btn btn-primary btn-sm" href="#">
+                                <i class="fas fa-folder">
                                 </i>
-                                View</router-link> &nbsp;
-                            <a class="btn btn-info btn-sm" href="#">
+                                SS
+                            </a>&nbsp;
+                            <a class="btn btn-warning btn-sm" href="#">
                                 <i class="fas fa-pencil-alt">
                                 </i>
-                                Edit
+                                Refresh
                             </a>&nbsp;
-                            <a class="btn btn-danger btn-sm" href="#">
+                            <a class="btn btn-info btn-sm" href="#">
                                 <i class="fas fa-trash">
                                 </i>
-                                Delete
+                                Info
                             </a>
                         </td>
                     </tr>
@@ -70,16 +69,16 @@
         <div class="card-footer clearfix">
             <ul class="pagination pagination-sm m-0 float-right">
                 <li class="page-item" :class="{ disabled: pagination.current_page === 1 }">
-                    <a class="page-link" href="#" @click="getProviderLists(pagination.current_page - 1)"> « </a>
+                    <a class="page-link" href="#" @click="getProviderDetails(pagination.current_page - 1)"> « </a>
                 </li>
 
                 <li v-for="page in pagination.last_page" :key="page" class="page-item"
                     :class="{ active: page === pagination.current_page }">
-                    <a class="page-link" href="#" @click="getProviderLists(page)"> {{ page }} </a>
+                    <a class="page-link" href="#" @click="getProviderDetails(page)"> {{ page }} </a>
                 </li>
 
                 <li class="page-item" :class="{ disabled: pagination.current_page === pagination.last_page }">
-                    <a class="page-link" href="#" @click="getProviderLists(pagination.current_page + 1)">»</a>
+                    <a class="page-link" href="#" @click="getProviderDetails(pagination.current_page + 1)">»</a>
                 </li>
             </ul>
         </div>
@@ -90,19 +89,20 @@
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex'
 export default {
-    name: "DataAdminProvider",
+    name: "DataAdminProviderDetail",
 
     created() {
-        this.getProviderLists(1);
+        this.getProvider(this.$route.params.id);
+        this.getProviderDetails(this.$route.params.id);
     },
 
     computed: {
         ...mapState(['processing']),
-        ...mapGetters('provider', ['dataProviders', 'pagination'])
+        ...mapGetters('provider', ['providers', 'dataProviderDetails', 'pagination'])
     },
 
     methods: {
-        ...mapActions('provider', ['getProviderLists']),
+        ...mapActions('provider', ['getProvider', 'getProviderDetails']),
     }
 
 }
