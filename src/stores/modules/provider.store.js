@@ -61,11 +61,27 @@ const actions = {
         });
     },
 
-    getProviderDetails({ commit }, id) {
+    getProviderDetails({ commit }, id = 1) {
         return new Promise((resolve, reject) => {
             api.get(`admin/provider-detail/${id}`)
                 .then((response) => {
                     commit("ASSIGN_PROVIDER_DETAIL", response.data.result);
+                    resolve(response.data);
+                })
+                .catch((error) => handleError(error, commit, reject));
+        });
+    },
+
+    createProviderDetail({ dispatch, commit }, payload) {
+        commit("SET_PROCESSING", true, { root: true });
+        return new Promise((resolve, reject) => {
+            api.post("admin/provider-detail", payload)
+                .then((response) => {
+                    commit("CLEAR_ERRORS", "", { root: true });
+                    commit("SET_PROCESSING", false, { root: true });
+                    dispatch("getProviderDetails").then(() => {
+                        resolve(response.data);
+                    });
                     resolve(response.data);
                 })
                 .catch((error) => handleError(error, commit, reject));

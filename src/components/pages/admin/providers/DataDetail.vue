@@ -1,7 +1,12 @@
 <template>
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Provider {{ providers.name }}</h3>
+            <h3 class="card-title">Provider {{ providers?.name }}</h3> &nbsp;
+            <router-link class="btn bg-gradient-primary btn-sm"
+                :to="{ name: `admins.providers.data.detail.insert`, params: { id: providers?.id } }"> &nbsp; <i
+                    class="fas fa-plus">
+                </i>
+                Create Data </router-link>
             <div class="card-tools">
                 <div class="input-group input-group-sm" style="width: 150px;">
                     <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
@@ -23,10 +28,10 @@
                     <tr>
                         <th>No</th>
                         <th>Nama</th>
-                        <th>Method</th>
-                        <th>URL</th>
-                        <th>Total</th>
-                        <th>Terpakai</th>
+                        <th>License Key</th>
+                        <th>Info HP</th>
+                        <th>Label</th>
+                        <th>Deskripsi</th>
                         <th>Status</th>
                         <th></th>
                     </tr>
@@ -34,13 +39,14 @@
                 <tbody>
                     <tr v-for="(val, index) in dataProviderDetails" :key="index" :class="`provider_${val.id}`">
                         <td>{{ index + 1 }}</td>
-                        <td>{{ val.license_key }}</td>
-                        <td>{{ val.info_hp }}</td>
-                        <td>{{ val.description }}</td>
-                        <td>{{ val.label }}</td>
+                        <td>{{ val.name }}</td>
+                        <td>{{ val.license_key ?? '-' }}</td>
+                        <td>{{ val.info_hp ?? '-' }}</td>
+                        <td>{{ val.label ?? '-' }}</td>
+                        <td>{{ val.description ?? '-' }}</td>
                         <td>
                             <span :class="['badge', val.is_active ? 'badge-success' : 'badge-danger']">
-                                {{ provider.status ? 'Active' : 'Disable' }}
+                                {{ val.is_active ? 'Active' : 'Disable' }}
                             </span>
 
                         </td>

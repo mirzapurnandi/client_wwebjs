@@ -32,6 +32,13 @@ const routeAdmin = [
                     import("@/components/pages/admin/providers/DataDetail.vue"),
                 meta: { title: "Data Provider Detail" },
             },
+            {
+                path: ":id/insert",
+                name: "admins.providers.data.detail.insert",
+                component: () =>
+                    import("@/components/pages/admin/providers/AddDetail.vue"),
+                meta: { title: "Add Provider Detail" },
+            },
         ],
     },
 ];
