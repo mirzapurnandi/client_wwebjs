@@ -3,19 +3,21 @@ import Vuex from "vuex";
 import auth from "./modules/auth.store";
 import user from "./modules/user.store";
 import provider from "./modules/provider.store";
+import routing from "./modules/routing.store";
 
 const store = new Vuex.Store({
     modules: {
         auth,
         user,
         provider,
+        routing,
     },
 
     state: {
         processing: false,
         token: localStorage.getItem("token") || null,
         errors: [],
-        authenticated: []
+        authenticated: [],
     },
 
     getters: {

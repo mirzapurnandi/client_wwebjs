@@ -41,6 +41,28 @@ const routeAdmin = [
             },
         ],
     },
+
+    {
+        path: "/admins/routings",
+        meta: { requiresAuth: true },
+        component: () => import("@/components/pages/admin/routings/Index.vue"),
+        children: [
+            {
+                path: "",
+                name: "admins.routings.data",
+                component: () =>
+                    import("@/components/pages/admin/routings/Data.vue"),
+                meta: { title: "Data Routing" },
+            },
+            {
+                path: ":id",
+                name: "admins.routings.data.detail",
+                component: () =>
+                    import("@/components/pages/admin/routings/DataDetail.vue"),
+                meta: { title: "Data Routing Detail" },
+            },
+        ],
+    },
 ];
 
 export default routeAdmin;
