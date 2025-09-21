@@ -18,6 +18,7 @@
                 <div class="modal-footer justify-content-between">
                     <slot name="footer">
                         <button type="button" class="btn btn-warning" @click="onRefresh">Refresh Instance</button>
+                        <button type="button" class="btn btn-info" @click="getQR">QR Instance</button>
                         <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
                     </slot>
                 </div>
@@ -36,6 +37,9 @@ export default {
     methods: {
         onRefresh() {
             this.$emit("refresh"); // kirim ke parent
+        },
+        getQR() {
+            this.$emit("qr"); // kirim ke parent
         }
     }
 }

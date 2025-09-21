@@ -81,7 +81,7 @@
     </div>
 
     <ModalProviderDetail id="modal-xl" title="Detail Provider" :instanceId="this.idInstanceActive"
-        @refresh="refreshInstance">
+        @refresh="refreshInstance" @qr="getQRInstance">
         <template #body>
             <div v-if="providerDetails">
                 <p><strong>ID:</strong> {{ providerDetails.provider_detail.id }}</p>
@@ -95,6 +95,10 @@
             </div>
             <div v-else>
                 <i class="fas fa-spinner fa-spin"></i> Loading...
+            </div>
+            <div v-if="providerDetails?.qr_instance">
+                <p><strong>QR Instance:</strong></p>
+                <div v-html="providerDetails.qr_instance"></div>
             </div>
         </template>
     </ModalProviderDetail>
@@ -110,6 +114,7 @@ export default {
     data() {
         return {
             idInstanceActive: null,
+            idInstanceQR: null
         }
     },
 
@@ -125,7 +130,7 @@ export default {
     },
 
     methods: {
-        ...mapActions('provider', ['getProvider', 'getDataProviderDetails', 'getStatusProviderDetails', 'refreshProviderDetails']),
+        ...mapActions('provider', ['getProvider', 'getDataProviderDetails', 'getStatusProviderDetails', 'refreshProviderDetails', 'getQRProviderDetails']),
         ...mapMutations('provider', ['CLEAR_PROVIDER_DETAIL']),
 
         async openModal(id_instance) {
@@ -144,6 +149,13 @@ export default {
         async refreshInstance() {
             this.CLEAR_PROVIDER_DETAIL();
             await this.refreshProviderDetails({
+                id_instance: this.idInstanceActive
+            });
+        },
+
+        async getQRInstance() {
+            this.CLEAR_PROVIDER_DETAIL();
+            await this.getQRProviderDetails({
                 id_instance: this.idInstanceActive
             });
         }

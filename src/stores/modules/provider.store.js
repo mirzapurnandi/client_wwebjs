@@ -118,6 +118,17 @@ const actions = {
                 .catch((error) => handleError(error, commit, reject));
         });
     },
+
+    getQRProviderDetails({ commit }, payload) {
+        return new Promise((resolve, reject) => {
+            api.post(`admin/provider-detail-qr`, payload)
+                .then((response) => {
+                    commit("ASSIGN_PROVIDER_DETAIL", response.data.result);
+                    resolve(response.data);
+                })
+                .catch((error) => handleError(error, commit, reject));
+        });
+    },
 };
 
 const getters = {
