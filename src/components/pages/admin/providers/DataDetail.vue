@@ -51,18 +51,8 @@
 
                         </td>
                         <td class="text-right">
-                            <a class="btn btn-primary btn-sm" href="#">
+                            <a class="btn btn-primary btn-sm" href="#" @click.prevent="openModal(val.license_key)">
                                 <i class="fas fa-folder">
-                                </i>
-                                SS
-                            </a>&nbsp;
-                            <a class="btn btn-warning btn-sm" href="#">
-                                <i class="fas fa-pencil-alt">
-                                </i>
-                                Refresh
-                            </a>&nbsp;
-                            <a class="btn btn-info btn-sm" href="#">
-                                <i class="fas fa-trash">
                                 </i>
                                 Info
                             </a>
@@ -88,27 +78,75 @@
                 </li>
             </ul>
         </div>
-
     </div>
+
+    <ModalProviderDetail id="modal-xl" title="Detail Provider" :instanceId="this.idInstanceActive"
+        @refresh="refreshInstance">
+        <template #body>
+            <div v-if="providerDetails">
+                <p><strong>ID:</strong> {{ providerDetails.provider_detail.id }}</p>
+                <p><strong>License Key:</strong> {{ providerDetails.provider_detail.license_key }}</p>
+                <p><strong>Label:</strong> {{ providerDetails.provider_detail.label }}</p>
+                <p><strong>Status:</strong>
+                    <span :class="['badge', providerDetails.provider_detail.status ? 'badge-success' : 'badge-danger']">
+                        {{ providerDetails.provider_detail.status ? 'Active' : 'Disable' }}
+                    </span>
+                </p>
+            </div>
+            <div v-else>
+                <i class="fas fa-spinner fa-spin"></i> Loading...
+            </div>
+        </template>
+    </ModalProviderDetail>
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from 'vuex'
+import { mapActions, mapState, mapGetters, mapMutations } from 'vuex'
+import ModalProviderDetail from "@/components/modals/ModalProviderDetail.vue";
 export default {
     name: "DataAdminProviderDetail",
+    components: { ModalProviderDetail },
+
+    data() {
+        return {
+            idInstanceActive: null,
+        }
+    },
 
     created() {
         this.getProvider(this.$route.params.id);
-        this.getProviderDetails(this.$route.params.id);
+        this.getDataProviderDetails(this.$route.params.id);
     },
 
     computed: {
         ...mapState(['processing']),
+        ...mapState('provider', ['providerDetails']),
         ...mapGetters('provider', ['providers', 'dataProviderDetails', 'pagination'])
     },
 
     methods: {
-        ...mapActions('provider', ['getProvider', 'getProviderDetails']),
+        ...mapActions('provider', ['getProvider', 'getDataProviderDetails', 'getStatusProviderDetails', 'refreshProviderDetails']),
+        ...mapMutations('provider', ['CLEAR_PROVIDER_DETAIL']),
+
+        async openModal(id_instance) {
+            this.idInstanceActive = id_instance;
+            try {
+                this.CLEAR_PROVIDER_DETAIL();
+                $('#modal-xl').modal('show');
+                await this.getStatusProviderDetails({
+                    id_instance,
+                });
+            } catch (err) {
+                console.error("Gagal ambil detail:", err);
+            }
+        },
+
+        async refreshInstance() {
+            this.CLEAR_PROVIDER_DETAIL();
+            await this.refreshProviderDetails({
+                id_instance: this.idInstanceActive
+            });
+        }
     }
 
 }

@@ -3,6 +3,7 @@ import handleError from "@/utils/handleError";
 
 const state = () => ({
     providers: null,
+    providerDetails: null,
     dataProviderDetail: [],
     dataProvider: [],
     dataPagination: {},
@@ -11,6 +12,14 @@ const state = () => ({
 const mutations = {
     ASSIGN_PROVIDER(state, payload) {
         state.providers = payload;
+    },
+
+    ASSIGN_PROVIDER_DETAIL(state, payload) {
+        state.providerDetails = payload;
+    },
+
+    CLEAR_PROVIDER_DETAIL(state, payload) {
+        state.providerDetails = null;
     },
 
     ASSIGN_DATA_PROVIDER(state, payload) {
@@ -25,7 +34,7 @@ const mutations = {
         };
     },
 
-    ASSIGN_PROVIDER_DETAIL(state, payload) {
+    ASSIGN_DATA_PROVIDER_DETAIL(state, payload) {
         state.dataProviderDetail = payload.result;
         state.dataPagination = {
             total: payload.total,
@@ -61,11 +70,11 @@ const actions = {
         });
     },
 
-    getProviderDetails({ commit }, id = 1) {
+    getDataProviderDetails({ commit }, id = 1) {
         return new Promise((resolve, reject) => {
             api.get(`admin/provider-detail/${id}`)
                 .then((response) => {
-                    commit("ASSIGN_PROVIDER_DETAIL", response.data.result);
+                    commit("ASSIGN_DATA_PROVIDER_DETAIL", response.data.result);
                     resolve(response.data);
                 })
                 .catch((error) => handleError(error, commit, reject));
@@ -82,6 +91,28 @@ const actions = {
                     dispatch("getProviderDetails").then(() => {
                         resolve(response.data);
                     });
+                    resolve(response.data);
+                })
+                .catch((error) => handleError(error, commit, reject));
+        });
+    },
+
+    getStatusProviderDetails({ commit }, payload) {
+        return new Promise((resolve, reject) => {
+            api.post(`admin/provider-detail-status`, payload)
+                .then((response) => {
+                    commit("ASSIGN_PROVIDER_DETAIL", response.data.result);
+                    resolve(response.data);
+                })
+                .catch((error) => handleError(error, commit, reject));
+        });
+    },
+
+    refreshProviderDetails({ commit }, payload) {
+        return new Promise((resolve, reject) => {
+            api.post(`admin/provider-detail-refresh`, payload)
+                .then((response) => {
+                    commit("ASSIGN_PROVIDER_DETAIL", response.data.result);
                     resolve(response.data);
                 })
                 .catch((error) => handleError(error, commit, reject));
