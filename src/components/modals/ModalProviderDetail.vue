@@ -38,7 +38,9 @@ export default {
     },
     methods: {
         onRefresh() {
-            this.$emit("refresh"); // kirim ke parent
+            if (confirm("🚨 Apakah Anda yakin ingin melakukan Refresh Instance?")) {
+                this.$emit("refresh");
+            }
         },
         getQR() {
             this.$emit("qr"); // kirim ke parent
@@ -47,7 +49,9 @@ export default {
             this.$emit("status"); // kirim ke parent
         },
         reDeploy() {
-            this.$emit("redeploy"); // kirim ke parent
+            if (confirm("🚨 Apakah Anda yakin ingin melakukan Redeploy Instance?\nTindakan ini dapat merestart ulang instance.")) {
+                this.$emit("redeploy");
+            }
         },
         screenShot() {
             this.$emit("screenshot"); // kirim ke parent
