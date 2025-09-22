@@ -81,15 +81,17 @@
     </div>
 
     <ModalProviderDetail id="modal-xl" title="Detail Provider" :instanceId="this.idInstanceActive"
-        @refresh="refreshInstance" @qr="getQRInstance">
+        @refresh="refreshInstance" @qr="getQRInstance" @status="statusInstance" @redeploy="redeployInstance"
+        @screenshot="getScreenshotInstance">
         <template #body>
             <div v-if="providerDetails">
                 <p><strong>ID:</strong> {{ providerDetails.provider_detail.id }}</p>
                 <p><strong>License Key:</strong> {{ providerDetails.provider_detail.license_key }}</p>
                 <p><strong>Label:</strong> {{ providerDetails.provider_detail.label }}</p>
                 <p><strong>Status:</strong>
-                    <span :class="['badge', providerDetails.provider_detail.status ? 'badge-success' : 'badge-danger']">
-                        {{ providerDetails.provider_detail.status ? 'Active' : 'Disable' }}
+                    <span
+                        :class="['badge', providerDetails.provider_detail.is_active ? 'badge-success' : 'badge-danger']">
+                        {{ providerDetails.provider_detail.is_active ? 'Active' : 'Disable' }}
                     </span>
                 </p>
             </div>
@@ -99,6 +101,10 @@
             <div v-if="providerDetails?.qr_instance">
                 <p><strong>QR Instance:</strong></p>
                 <div v-html="providerDetails.qr_instance"></div>
+            </div>
+            <div v-if="providerDetails?.ss_instance">
+                <p><strong>Screenshot Instance:</strong></p>
+                <div v-html="providerDetails.ss_instance"></div>
             </div>
         </template>
     </ModalProviderDetail>
@@ -130,7 +136,7 @@ export default {
     },
 
     methods: {
-        ...mapActions('provider', ['getProvider', 'getDataProviderDetails', 'getStatusProviderDetails', 'refreshProviderDetails', 'getQRProviderDetails']),
+        ...mapActions('provider', ['getProvider', 'getDataProviderDetails', 'getStatusProviderDetails', 'refreshProviderDetails', 'getQRProviderDetails', 'redeployProviderDetails', 'getScreenshotProviderDetails']),
         ...mapMutations('provider', ['CLEAR_PROVIDER_DETAIL']),
 
         async openModal(id_instance) {
@@ -156,6 +162,27 @@ export default {
         async getQRInstance() {
             this.CLEAR_PROVIDER_DETAIL();
             await this.getQRProviderDetails({
+                id_instance: this.idInstanceActive
+            });
+        },
+
+        async statusInstance() {
+            this.CLEAR_PROVIDER_DETAIL();
+            await this.getStatusProviderDetails({
+                id_instance: this.idInstanceActive
+            });
+        },
+
+        async redeployInstance() {
+            this.CLEAR_PROVIDER_DETAIL();
+            await this.redeployProviderDetails({
+                id_instance: this.idInstanceActive
+            });
+        },
+
+        async getScreenshotInstance() {
+            this.CLEAR_PROVIDER_DETAIL();
+            await this.getScreenshotProviderDetails({
                 id_instance: this.idInstanceActive
             });
         }

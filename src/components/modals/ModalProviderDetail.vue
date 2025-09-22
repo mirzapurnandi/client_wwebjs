@@ -1,6 +1,6 @@
 <template>
     <div class="modal fade" :id="id" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">{{ title }}</h4>
@@ -17,9 +17,11 @@
                 <!-- slot untuk footer -->
                 <div class="modal-footer justify-content-between">
                     <slot name="footer">
+                        <button type="button" class="btn btn-success" @click="onStatus">Status Instance</button>
                         <button type="button" class="btn btn-warning" @click="onRefresh">Refresh Instance</button>
-                        <button type="button" class="btn btn-info" @click="getQR">QR Instance</button>
-                        <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-info" @click="getQR">Get QR Instance</button>
+                        <button type="button" class="btn btn-danger" @click="reDeploy">Redeploy Instance</button>
+                        <button type="button" class="btn btn-secondary" @click="screenShot">Get Screenshot</button>
                     </slot>
                 </div>
             </div>
@@ -40,6 +42,15 @@ export default {
         },
         getQR() {
             this.$emit("qr"); // kirim ke parent
+        },
+        onStatus() {
+            this.$emit("status"); // kirim ke parent
+        },
+        reDeploy() {
+            this.$emit("redeploy"); // kirim ke parent
+        },
+        screenShot() {
+            this.$emit("screenshot"); // kirim ke parent
         }
     }
 }

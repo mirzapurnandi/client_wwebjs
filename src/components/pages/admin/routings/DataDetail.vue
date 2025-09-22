@@ -107,7 +107,7 @@
 
 <script>
 import { mapActions, mapState, mapGetters, mapMutations } from 'vuex'
-import ModalProviderDetail from "@/components/ModalProviderDetail.vue";
+import ModalProviderDetail from "@/components/modals/ModalProviderDetail.vue";
 export default {
     name: "DataAdminProviderDetail",
     components: { ModalProviderDetail },
