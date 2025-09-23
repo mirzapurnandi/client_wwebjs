@@ -4,6 +4,7 @@ import auth from "./modules/auth.store";
 import user from "./modules/user.store";
 import provider from "./modules/provider.store";
 import routing from "./modules/routing.store";
+import message from "./modules/message.store";
 
 const store = new Vuex.Store({
     modules: {
@@ -11,6 +12,7 @@ const store = new Vuex.Store({
         user,
         provider,
         routing,
+        message,
     },
 
     state: {

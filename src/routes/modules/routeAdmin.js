@@ -63,6 +63,28 @@ const routeAdmin = [
             },
         ],
     },
+
+    {
+        path: "/admins/messages",
+        meta: { requiresAuth: true },
+        component: () => import("@/components/pages/admin/messages/Index.vue"),
+        children: [
+            {
+                path: "single",
+                name: "admins.messages.single",
+                component: () =>
+                    import("@/components/pages/admin/messages/Single.vue"),
+                meta: { title: "Single Send Message" },
+            },
+            {
+                path: "bulk",
+                name: "admins.messages.bulk",
+                component: () =>
+                    import("@/components/pages/admin/messages/Bulk.vue"),
+                meta: { title: "Bulk Send Messages" },
+            },
+        ],
+    },
 ];
 
 export default routeAdmin;
