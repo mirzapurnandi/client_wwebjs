@@ -1,4 +1,4 @@
-import store from "@/stores/store"
+import store from "@/stores/store";
 
 export default async function handleError(error, commit, reject) {
     if (error.response) {
@@ -8,6 +8,8 @@ export default async function handleError(error, commit, reject) {
             await store.dispatch("auth/signOut");
             localStorage.setItem("token", null);
             commit("SET_TOKEN", null, { root: true });
+        } else if (status === 400) {
+            commit("SET_ERRORS", error.response.message, { root: true });
         } else if (status === 422) {
             commit("SET_ERRORS", response.errors, { root: true });
         } else if (status === 500) {
@@ -15,5 +17,5 @@ export default async function handleError(error, commit, reject) {
         }
     }
     commit("SET_PROCESSING", false, { root: true });
-    reject(response);
+    reject(error.response);
 }

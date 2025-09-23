@@ -124,8 +124,7 @@ export default {
     data() {
         return {
             providerId: this.$route.params.id,
-            idInstanceActive: null,
-            idInstanceQR: null
+            idInstanceActive: null
         }
     },
 
@@ -164,10 +163,17 @@ export default {
             });
         },
 
-        async getQRInstance() {
+        getQRInstance() {
             this.CLEAR_PROVIDER_DETAIL();
-            await this.getQRProviderDetails({
+            this.getQRProviderDetails({
                 id_instance: this.idInstanceActive
+            }).catch((err) => {
+                console.log(err);
+                this.$swal({
+                    icon: "error",
+                    title: "Oops...",
+                    text: err.data.message ? err.data.message : "Something went wrong!",
+                });
             });
         },
 

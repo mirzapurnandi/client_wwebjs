@@ -111,7 +111,7 @@
                                 <select v-model="form.providerdetail_id" class="form-control"
                                     :disabled="!selectedProvider">
                                     <option value="">-- Pilih Provider Detail --</option>
-                                    <option v-for="detail in providerDetails" :key="detail.id" :value="detail.id">
+                                    <option v-for="detail in providerDataDetails" :key="detail.id" :value="detail.id">
                                         {{ detail.description }} ({{ detail.label ?? '-' }})
                                     </option>
                                 </select>
@@ -138,23 +138,34 @@
         </div>
     </div>
 
-    <!--ModalProviderDetail id="modal-xl" title="Detail Provider">
+    <ModalProviderDetail id="modal-xl" title="Detail Provider" :instanceId="this.idInstanceActive"
+        @refresh="refreshInstance" @qr="getQRInstance" @status="statusInstance" @redeploy="redeployInstance"
+        @screenshot="getScreenshotInstance">
         <template #body>
             <div v-if="providerDetails">
                 <p><strong>ID:</strong> {{ providerDetails.provider_detail.id }}</p>
                 <p><strong>License Key:</strong> {{ providerDetails.provider_detail.license_key }}</p>
                 <p><strong>Label:</strong> {{ providerDetails.provider_detail.label }}</p>
                 <p><strong>Status:</strong>
-                    <span :class="['badge', providerDetails.provider_detail.status ? 'badge-success' : 'badge-danger']">
-                        {{ providerDetails.provider_detail.status ? 'Active' : 'Disable' }}
+                    <span
+                        :class="['badge', providerDetails.provider_detail.is_active ? 'badge-success' : 'badge-danger']">
+                        {{ providerDetails.provider_detail.is_active ? 'Active' : 'Disable' }}
                     </span>
                 </p>
             </div>
             <div v-else>
                 <i class="fas fa-spinner fa-spin"></i> Loading...
             </div>
+            <div v-if="providerDetails?.qr_instance">
+                <p><strong>QR Instance:</strong></p>
+                <div v-html="providerDetails.qr_instance"></div>
+            </div>
+            <div v-if="providerDetails?.ss_instance">
+                <p><strong>Screenshot Instance:</strong></p>
+                <div v-html="providerDetails.ss_instance"></div>
+            </div>
         </template>
-</ModalProviderDetail-->
+    </ModalProviderDetail>
 </template>
 
 <script>
@@ -165,14 +176,14 @@ export default {
     components: { ModalProviderDetail },
     data() {
         return {
-            modalData: null,   // detail yang dipilih
+            idInstanceActive: null,
             form: {
                 routing_id: this.$route.params.id,
                 providerdetail_id: "",
                 is_backup: false
             },
             selectedProvider: "",
-            providerDetails: []
+            providerDataDetails: []
         }
     },
 
@@ -186,13 +197,14 @@ export default {
 
     computed: {
         ...mapState(['processing']),
+        ...mapState('provider', ['providerDetails']),
         ...mapGetters("provider", ["dataProviders"]),
         ...mapGetters('routing', ['routings', 'dataRoutingDetails', 'pagination'])
     },
 
     methods: {
         ...mapActions('routing', ['getRoutingDetails', 'addEngine']),
-        ...mapActions('provider', ['getProviderLists', 'getDataProviderDetails', 'getStatusProviderDetails']),
+        ...mapActions('provider', ['getProviderLists', 'getDataProviderDetails', 'getStatusProviderDetails', 'refreshProviderDetails', 'getQRProviderDetails', 'redeployProviderDetails', 'getScreenshotProviderDetails']),
         ...mapMutations('provider', ['CLEAR_PROVIDER_DETAIL']),
 
         async openModalCreateEngine() {
@@ -206,12 +218,12 @@ export default {
 
         async loadProviderDetails() {
             if (!this.selectedProvider) {
-                this.providerDetails = [];
+                this.providerDataDetails = [];
                 this.form.providerdetail_id = "";
                 return;
             }
             const details = await this.getDataProviderDetails(this.selectedProvider);
-            this.providerDetails = details?.result?.result; // hasil API list detail provider
+            this.providerDataDetails = details?.result?.result; // hasil API list detail provider
         },
 
         async submitEngine() {
@@ -238,6 +250,62 @@ export default {
                 });
                 // console.error("Gagal simpan engine:", err);
             }
+        },
+
+        async openModal(id_instance) {
+            this.idInstanceActive = id_instance;
+            try {
+                this.CLEAR_PROVIDER_DETAIL();
+                $('#modal-xl').modal('show');
+                await this.getStatusProviderDetails({
+                    id_instance,
+                });
+            } catch (err) {
+                console.error("Gagal ambil detail:", err);
+            }
+        },
+
+        async refreshInstance() {
+            this.CLEAR_PROVIDER_DETAIL();
+            await this.refreshProviderDetails({
+                id_instance: this.idInstanceActive
+            });
+        },
+
+        getQRInstance() {
+            this.CLEAR_PROVIDER_DETAIL();
+            this.getQRProviderDetails({
+                id_instance: this.idInstanceActive
+            }).catch((err) => {
+                console.log(err);
+                this.$swal({
+                    icon: "error",
+                    title: "Oops...",
+                    text: err.data.message ? err.data.message : "Something went wrong!",
+                });
+            });
+        },
+
+        async statusInstance() {
+            this.CLEAR_PROVIDER_DETAIL();
+            await this.getStatusProviderDetails({
+                id_instance: this.idInstanceActive
+            });
+            await this.getDataProviderDetails(this.providerId);
+        },
+
+        async redeployInstance() {
+            this.CLEAR_PROVIDER_DETAIL();
+            await this.redeployProviderDetails({
+                id_instance: this.idInstanceActive
+            });
+        },
+
+        async getScreenshotInstance() {
+            this.CLEAR_PROVIDER_DETAIL();
+            await this.getScreenshotProviderDetails({
+                id_instance: this.idInstanceActive
+            });
         }
     }
 
