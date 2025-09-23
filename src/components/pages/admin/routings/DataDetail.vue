@@ -5,6 +5,10 @@
             <button class="btn bg-gradient-primary btn-sm" href="javascript:;" @click.prevent="openModalCreateEngine()">
                 <i class="fas fa-plus"></i> Tambah Engine
             </button>
+            &nbsp;
+            <button class="btn bg-gradient-success btn-sm" @click="refreshPage">
+                <i class="fas fa-refresh"></i> Refresh
+            </button>
 
             <div class="card-tools">
                 <div class="input-group input-group-sm" style="width: 150px;">
@@ -26,6 +30,7 @@
                 <thead>
                     <tr>
                         <th>No</th>
+                        <th>Data Provider</th>
                         <th>Data Sender</th>
                         <th>Backup?</th>
                         <th>Status</th>
@@ -36,10 +41,15 @@
                     <tr v-for="(val, index) in dataRoutingDetails" :key="index" :class="`provider_${val.id}`">
                         <td>{{ index + 1 }}</td>
                         <td>
-                            {{ val.license_key }} <br>
+                            {{ val.provider_id + ": " + val.provider_name }} <br>
+                            {{ val.provider_url }}
+                        </td>
+                        <td>
                             <span :class="['badge', val.is_active ? 'badge-success' : 'badge-danger']">
                                 {{ val.label }}
-                            </span>
+                            </span>&nbsp;
+                            {{ val.license_key }} <br>
+                            {{ val.description }} {{ val.info_hp ? ' || ' + val.info_hp : '' }}
                         </td>
                         <td>
                             <span :class="['badge', val.is_backup ? 'badge-success' : 'badge-danger']">
@@ -305,6 +315,15 @@ export default {
             this.CLEAR_PROVIDER_DETAIL();
             await this.getScreenshotProviderDetails({
                 id_instance: this.idInstanceActive
+            });
+        },
+
+        async refreshPage() {
+            this.CLEAR_PROVIDER_DETAIL();
+            await this.getRoutingDetails({
+                id: this.$route.params.id,
+                page: this.$route.query.page || 1,
+                user_id: this.$route.query.user_id,
             });
         }
     }
