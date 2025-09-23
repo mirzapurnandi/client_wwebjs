@@ -7,6 +7,10 @@
                     class="fas fa-plus">
                 </i>
                 Create Data </router-link>
+            &nbsp;
+            <button class="btn bg-gradient-success btn-sm" @click="refreshPage">
+                <i class="fas fa-refresh"></i> Refresh
+            </button>
             <div class="card-tools">
                 <div class="input-group input-group-sm" style="width: 150px;">
                     <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
@@ -119,6 +123,7 @@ export default {
 
     data() {
         return {
+            providerId: this.$route.params.id,
             idInstanceActive: null,
             idInstanceQR: null
         }
@@ -171,6 +176,7 @@ export default {
             await this.getStatusProviderDetails({
                 id_instance: this.idInstanceActive
             });
+            await this.getDataProviderDetails(this.providerId);
         },
 
         async redeployInstance() {
@@ -185,6 +191,11 @@ export default {
             await this.getScreenshotProviderDetails({
                 id_instance: this.idInstanceActive
             });
+        },
+
+        async refreshPage() {
+            this.CLEAR_PROVIDER_DETAIL();
+            await this.getDataProviderDetails(this.providerId);
         }
     }
 

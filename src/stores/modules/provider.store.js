@@ -97,7 +97,7 @@ const actions = {
         });
     },
 
-    getStatusProviderDetails({ commit }, payload) {
+    getStatusProviderDetails({ commit, dispatch }, payload) {
         return new Promise((resolve, reject) => {
             api.post(`admin/provider-detail-status`, payload)
                 .then((response) => {
