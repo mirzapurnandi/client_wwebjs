@@ -75,21 +75,21 @@ const actions = {
         });
     },
 
-    /* createProviderDetail({ dispatch, commit }, payload) {
+    addEngine({ dispatch, commit }, payload) {
         commit("SET_PROCESSING", true, { root: true });
         return new Promise((resolve, reject) => {
-            api.post("admin/provider-detail", payload)
+            api.post("admin/routing/add-engine", payload)
                 .then((response) => {
                     commit("CLEAR_ERRORS", "", { root: true });
                     commit("SET_PROCESSING", false, { root: true });
-                    dispatch("getProviderDetails").then(() => {
+                    dispatch("getRoutingLists").then(() => {
                         resolve(response.data);
                     });
                     resolve(response.data);
                 })
                 .catch((error) => handleError(error, commit, reject));
         });
-    }, */
+    },
 };
 
 const getters = {

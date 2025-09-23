@@ -1,12 +1,11 @@
 <template>
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Provider {{ providers?.name }}</h3> &nbsp;
-            <router-link class="btn bg-gradient-primary btn-sm"
-                :to="{ name: `admins.providers.data.detail.insert`, params: { id: providers?.id } }"> &nbsp; <i
-                    class="fas fa-plus">
-                </i>
-                Create Data </router-link>
+            <h3 class="card-title">Data Routing: <b>{{ routings?.sender_name }}</b></h3> &nbsp;
+            <button class="btn bg-gradient-primary btn-sm" href="javascript:;" @click.prevent="openModalCreateEngine()">
+                <i class="fas fa-plus"></i> Tambah Engine
+            </button>
+
             <div class="card-tools">
                 <div class="input-group input-group-sm" style="width: 150px;">
                     <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
@@ -67,7 +66,7 @@
             </table>
         </div>
 
-        <div class="card-footer clearfix">
+        <!--div class="card-footer clearfix">
             <ul class="pagination pagination-sm m-0 float-right">
                 <li class="page-item" :class="{ disabled: pagination.current_page === 1 }">
                     <a class="page-link" href="#" @click="getProviderDetails(pagination.current_page - 1)"> « </a>
@@ -82,11 +81,64 @@
                     <a class="page-link" href="#" @click="getProviderDetails(pagination.current_page + 1)">»</a>
                 </li>
             </ul>
-        </div>
+        </div-->
 
+        <div class="modal fade" id="modal-add-engine" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">Tambah Engine</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <form @submit.prevent="submitEngine">
+                            <!-- Provider -->
+                            <div class="mb-3">
+                                <label for="provider" class="form-label">Provider</label>
+                                <select v-model="selectedProvider" class="form-control" @change="loadProviderDetails">
+                                    <option value="">-- Pilih Provider --</option>
+                                    <option v-for="prov in dataProviders" :key="prov.id" :value="prov.id">
+                                        {{ prov.name }}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Provider Detail (nested) -->
+                            <div class="mb-3">
+                                <label for="providerdetail" class="form-label">Provider Detail</label>
+                                <select v-model="form.providerdetail_id" class="form-control"
+                                    :disabled="!selectedProvider">
+                                    <option value="">-- Pilih Provider Detail --</option>
+                                    <option v-for="detail in providerDetails" :key="detail.id" :value="detail.id">
+                                        {{ detail.description }} ({{ detail.label ?? '-' }})
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Is Backup -->
+                            <div class="mb-3">
+                                <label for="isbackup" class="form-label">Backup?</label>
+                                <select v-model="form.is_backup" class="form-control">
+                                    <option :value="false">Tidak</option>
+                                    <option :value="true">Ya</option>
+                                </select>
+                            </div>
+
+                        </form>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button class="btn btn-primary" @click="submitEngine">Simpan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <ModalProviderDetail id="modal-xl" title="Detail Provider">
+    <!--ModalProviderDetail id="modal-xl" title="Detail Provider">
         <template #body>
             <div v-if="providerDetails">
                 <p><strong>ID:</strong> {{ providerDetails.provider_detail.id }}</p>
@@ -102,7 +154,7 @@
                 <i class="fas fa-spinner fa-spin"></i> Loading...
             </div>
         </template>
-    </ModalProviderDetail>
+</ModalProviderDetail-->
 </template>
 
 <script>
@@ -114,6 +166,13 @@ export default {
     data() {
         return {
             modalData: null,   // detail yang dipilih
+            form: {
+                routing_id: this.$route.params.id,
+                providerdetail_id: "",
+                is_backup: false
+            },
+            selectedProvider: "",
+            providerDetails: []
         }
     },
 
@@ -127,24 +186,57 @@ export default {
 
     computed: {
         ...mapState(['processing']),
-        ...mapState('provider', ['providerDetails']),
-        ...mapGetters('routing', ['dataRoutingDetails', 'pagination'])
+        ...mapGetters("provider", ["dataProviders"]),
+        ...mapGetters('routing', ['routings', 'dataRoutingDetails', 'pagination'])
     },
 
     methods: {
-        ...mapActions('routing', ['getRoutingDetails']),
-        ...mapActions('provider', ['getStatusProviderDetails']),
+        ...mapActions('routing', ['getRoutingDetails', 'addEngine']),
+        ...mapActions('provider', ['getProviderLists', 'getDataProviderDetails', 'getStatusProviderDetails']),
         ...mapMutations('provider', ['CLEAR_PROVIDER_DETAIL']),
 
-        async openModal(id_instance) {
+        async openModalCreateEngine() {
             try {
-                this.CLEAR_PROVIDER_DETAIL();
-                $('#modal-xl').modal('show');
-                await this.getStatusProviderDetails({
-                    id_instance,
-                });
+                await this.getProviderLists();
+                $('#modal-add-engine').modal('show');
             } catch (err) {
                 console.error("Gagal ambil detail:", err);
+            }
+        },
+
+        async loadProviderDetails() {
+            if (!this.selectedProvider) {
+                this.providerDetails = [];
+                this.form.providerdetail_id = "";
+                return;
+            }
+            const details = await this.getDataProviderDetails(this.selectedProvider);
+            this.providerDetails = details?.result?.result; // hasil API list detail provider
+        },
+
+        async submitEngine() {
+            try {
+                await this.addEngine(this.form);
+                $("#modal-add-engine").modal("hide");
+                await this.$swal({
+                    position: "top-end",
+                    icon: "success",
+                    title: "Engine berhasil ditambahkan",
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+                await this.getRoutingDetails({
+                    id: this.$route.params.id,
+                    page: this.$route.query.page || 1,
+                    user_id: this.$route.query.user_id,
+                });
+            } catch (err) {
+                this.$swal({
+                    icon: "error",
+                    title: "Oops...",
+                    text: err.data.message ? err.data.message : "Something went wrong!",
+                });
+                // console.error("Gagal simpan engine:", err);
             }
         }
     }
