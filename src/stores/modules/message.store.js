@@ -48,6 +48,17 @@ const actions = {
         });
     },
 
+    sendBulkMessage({ commit }, payload) {
+        return new Promise((resolve, reject) => {
+            api.post("admin/message/upload/send", payload)
+                .then((response) => {
+                    commit("ASSIGN_MESSAGE", response.data.result);
+                    resolve(response.data);
+                })
+                .catch((error) => handleError(error, commit, reject));
+        });
+    },
+
     uploadBulkMessage({ commit }, payload) {
         return new Promise((resolve, reject) => {
             api.post("admin/message/upload", payload, {

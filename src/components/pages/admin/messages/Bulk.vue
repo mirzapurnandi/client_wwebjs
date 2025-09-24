@@ -52,7 +52,7 @@
             </form>
         </div>
         <div class="card-footer">
-            <button type="button" class="btn btn-info">Send Message</button>
+            <button type="button" class="btn btn-info" @click="confirmSend">Send Message</button>
         </div>
     </div>
 
@@ -128,7 +128,7 @@ export default {
     },
 
     methods: {
-        ...mapActions('message', ['uploadBulkMessage', 'getDataMessageTemp']),
+        ...mapActions('message', ['uploadBulkMessage', 'getDataMessageTemp', 'sendBulkMessage']),
         ...mapActions('routing', ['getRoutingLists']),
         ...mapMutations(['CLEAR_ERRORS']),
 
@@ -171,6 +171,9 @@ export default {
                     showConfirmButton: false,
                     timer: 500
                 });
+                this.getDataMessageTemp({
+                    user_id: this.form.user_id
+                });
             }).catch((error) => {
                 this.$swal({
                     icon: "error",
@@ -178,7 +181,35 @@ export default {
                     text: error.data?.message ? error.data?.message : "Something went wrong!",
                 });
             });
-        }
+        },
+
+        confirmSend() {
+            this.$swal({
+                title: "Kirim Pesan?",
+                text: "Apakah Anda yakin ingin mengirim pesan ini?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Ya, kirim!",
+                cancelButtonText: "Batal",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.sendBulkMessage({
+                        user_id: this.form.user_id,
+                        sender_name: this.form.sender_name
+                    }).then((result) => {
+                        this.$swal({
+                            position: "top-end",
+                            icon: "success",
+                            title: result.message,
+                            showConfirmButton: false,
+                            timer: 500
+                        });
+                    });
+                }
+            });
+        },
     }
 }
 </script>
