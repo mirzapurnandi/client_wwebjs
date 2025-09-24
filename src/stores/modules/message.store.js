@@ -22,6 +22,20 @@ const actions = {
                 .catch((error) => handleError(error, commit, reject));
         });
     },
+
+    uploadBulkMessage({ commit }, payload) {
+        return new Promise((resolve, reject) => {
+            api.post("admin/message/upload", payload, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            })
+                .then((response) => {
+                    resolve(response.data);
+                })
+                .catch((error) => handleError(error, commit, reject));
+        });
+    },
 };
 
 export default {

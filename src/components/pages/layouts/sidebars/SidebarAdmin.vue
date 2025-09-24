@@ -42,7 +42,6 @@
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-
                         <router-link :to="{ name: 'admins.messages.single' }" class="nav-link "
                             :class="{ active: isActive('/admins/messages/single') }">
                             <i class="far fa-circle nav-icon"></i>

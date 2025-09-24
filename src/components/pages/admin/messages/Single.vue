@@ -12,7 +12,7 @@
                 </div>
 
                 <div class="form-group row">
-                    <label for="name" class="col-sm-2 col-form-label">Destination</label>
+                    <label for="name" class="col-sm-2 col-form-label">Sender Name</label>
                     <div class="col-sm-10">
                         <select id="sender" v-model="selectedSender" class="form-control" @change="onSelectSender">
                             <option value="">-- Pilih Sender --</option>
@@ -21,7 +21,7 @@
                             </option>
                         </select>
                         <span class="error invalid-feedback" v-if="errors.destination">{{ errors.destination[0]
-                            }}</span>
+                        }}</span>
                     </div>
                 </div>
 
@@ -31,7 +31,7 @@
                         <input type="number" class="form-control " :class="{ 'is-invalid': errors.destination }"
                             name="price" v-model="form.destination" id="price" placeholder="Masukan Price">
                         <span class="error invalid-feedback" v-if="errors.destination">{{ errors.destination[0]
-                            }}</span>
+                        }}</span>
                     </div>
                 </div>
 
