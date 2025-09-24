@@ -5,8 +5,8 @@
         </div>
         <!-- /.card-header -->
         <!-- form start -->
-        <form class="form-horizontal" @submit.prevent="upload" method="POST">
-            <div class="card-body " :class="{ 'overlay-wrapper': this.processing }">
+        <div class="card-body " :class="{ 'overlay-wrapper': this.processing }">
+            <form class="form-horizontal" @submit.prevent="upload" method="POST">
                 <div class="overlay dark" v-if="this.processing">
                     <i class="fas fa-3x fa-sync-alt fa-spin"></i>
                 </div>
@@ -40,15 +40,62 @@
 
                 <div class="form-group row">
                     <label for="name" class="col-sm-2 col-form-label"> </label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-3">
                         <button type="submit" class="btn btn-warning">Upload</button>
                     </div>
+                    <div class="col-sm-7">
+                        <a href="/templates/TemplateBlasting.xlsx" download class="btn btn-success ml-3">
+                            <i class="fas fa-file-excel"></i> Download Template
+                        </a>
+                    </div>
                 </div>
-
-            </div>
-        </form>
+            </form>
+        </div>
         <div class="card-footer">
             <button type="button" class="btn btn-info">Send Message</button>
+        </div>
+    </div>
+
+    <div class="card card-success">
+        <div class="card-header">
+            <h3 class="card-title">Data Message Temp</h3>
+        </div>
+        <div class="card-body table-responsive p-0 " :class="{ 'overlay-wrapper': this.processing }">
+            <div class="overlay dark" v-if="this.processing">
+                <i class="fas fa-3x fa-sync-alt fa-spin"></i>
+            </div>
+            <table class="table table-hover text-nowrap table-striped">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Destination</th>
+                        <th>Content</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(val, index) in dataMessages" :key="index" :class="`provider_${val.id}`">
+                        <td>{{ index + 1 }}</td>
+                        <td>{{ val.destination }}</td>
+                        <td>{{ val.content }}</td>
+                        <td class="text-right">
+                            <a class="btn btn-info btn-sm" href="#">
+                                <i class="fas fa-pencil-alt">
+                                </i>
+                                Edit
+                            </a>&nbsp;
+                            <a class="btn btn-danger btn-sm" href="#">
+                                <i class="fas fa-trash">
+                                </i>
+                                Delete
+                            </a>
+                        </td>
+                    </tr>
+                    <tr v-if="!dataMessages || dataMessages.length === 0">
+                        <td colspan="4" class="text-center text-muted">.:: Data kosong ::.</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </template>
@@ -76,11 +123,12 @@ export default {
 
     computed: {
         ...mapState(['errors', 'processing']),
+        ...mapState('message', ['dataMessages', 'dataPagination']),
         ...mapGetters('routing', ['dataRoutings'])
     },
 
     methods: {
-        ...mapActions('message', ['uploadBulkMessage']),
+        ...mapActions('message', ['uploadBulkMessage', 'getDataMessageTemp']),
         ...mapActions('routing', ['getRoutingLists']),
         ...mapMutations(['CLEAR_ERRORS']),
 
@@ -88,6 +136,9 @@ export default {
             if (this.selectedSender) {
                 this.form.user_id = this.selectedSender.user_id;
                 this.form.sender_name = this.selectedSender.sender_name;
+                this.getDataMessageTemp({
+                    user_id: this.form.user_id
+                });
             } else {
                 this.form.user_id = "";
                 this.form.sender_name = "";
