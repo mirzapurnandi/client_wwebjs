@@ -59,6 +59,14 @@
             </li>
 
             <li class="nav-item">
+                <router-link :to="{ name: 'admins.transactions.data' }" class="nav-link "
+                    :class="{ active: isActive('/admins/transactions') }">
+                    <i class="nav-icon fas fa-truck"></i>
+                    <p> List Transaction </p>
+                </router-link>
+            </li>
+
+            <li class="nav-item">
                 <a class="nav-link" href="javascript:void(0)" @click="logout">
                     <i class="nav-icon far fa-circle text-info"></i>
                     <p>Logout</p>

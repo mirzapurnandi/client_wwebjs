@@ -5,6 +5,7 @@ import user from "./modules/user.store";
 import provider from "./modules/provider.store";
 import routing from "./modules/routing.store";
 import message from "./modules/message.store";
+import transaction from "./modules/transaction.store";
 
 const store = new Vuex.Store({
     modules: {
@@ -13,6 +14,7 @@ const store = new Vuex.Store({
         provider,
         routing,
         message,
+        transaction,
     },
 
     state: {

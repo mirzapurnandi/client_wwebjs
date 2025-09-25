@@ -85,6 +85,22 @@ const routeAdmin = [
             },
         ],
     },
+
+    {
+        path: "/admins/transactions",
+        meta: { requiresAuth: true },
+        component: () =>
+            import("@/components/pages/admin/transactions/Index.vue"),
+        children: [
+            {
+                path: "",
+                name: "admins.transactions.data",
+                component: () =>
+                    import("@/components/pages/admin/transactions/Data.vue"),
+                meta: { title: "Data Transaction" },
+            },
+        ],
+    },
 ];
 
 export default routeAdmin;
