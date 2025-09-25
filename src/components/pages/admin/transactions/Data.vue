@@ -20,9 +20,20 @@
                                 {{ item.sender_name }} - {{ item.user_name }}
                             </option>
                         </select>
-                        <span class="error invalid-feedback" v-if="errors.destination">
-                            {{ errors.destination[0] }}
-                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="name" class="col-sm-2 col-form-label">Status</label>
+                    <div class="col-sm-10">
+                        <select id="status_code" v-model="this.form.status_code" class="form-control">
+                            <option value="">-- Pilih Status --</option>
+                            <option value="0">Waiting</option>
+                            <option value="1">Sent</option>
+                            <option value="2">Failed</option>
+                            <option value="3">Delivered</option>
+                            <option value="4">READ</option>
+                        </select>
                     </div>
                 </div>
 
@@ -61,7 +72,7 @@
                     <tr v-for="(val, index) in dataTransactions" :key="index" :class="`provider_${val.id}`">
                         <td>{{ val.id_transaction }}</td>
                         <td>{{ val.destination }}</td>
-                        <td>{{ val.content }}</td>
+                        <td><span v-html="val.content"></span></td>
                         <td>{{ val.status_code }}</td>
                         <td class="text-right">
                             <a class="btn btn-info btn-sm" href="#">
@@ -122,7 +133,8 @@ export default {
                 user_id: '',
                 sender_name: '',
                 page: 1,
-                limit: 50
+                limit: 50,
+                status_code: ''
             },
         }
     },
@@ -142,7 +154,6 @@ export default {
             if (this.selectedSender) {
                 this.form.user_id = await this.selectedSender.user_id;
                 this.form.sender_name = await this.selectedSender.sender_name;
-                await this.getDataTransaction(this.form);
             } else {
                 this.form.user_id = "";
                 this.form.sender_name = "";
@@ -159,7 +170,7 @@ export default {
         },
 
         filtering() {
-            alert('masuk');
+            this.getDataTransaction(this.form);
         }
     }
 }
