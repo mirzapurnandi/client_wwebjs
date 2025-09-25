@@ -50,17 +50,19 @@
             <table class="table table-hover text-nowrap table-striped">
                 <thead>
                     <tr>
-                        <th>No</th>
+                        <th>ID Transaction</th>
                         <th>Destination</th>
                         <th>Content</th>
+                        <th>Status</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(val, index) in dataTransactions" :key="index" :class="`provider_${val.id}`">
-                        <td>{{ index + 1 }}</td>
+                        <td>{{ val.id_transaction }}</td>
                         <td>{{ val.destination }}</td>
                         <td>{{ val.content }}</td>
+                        <td>{{ val.status_code }}</td>
                         <td class="text-right">
                             <a class="btn btn-info btn-sm" href="#">
                                 <i class="fas fa-pencil-alt">
@@ -75,10 +77,30 @@
                         </td>
                     </tr>
                     <tr v-if="!dataTransactions || dataTransactions.length === 0">
-                        <td colspan="4" class="text-center text-muted">.:: Data kosong ::.</td>
+                        <td colspan="5" class="text-center text-muted">.:: Data kosong ::.</td>
                     </tr>
                 </tbody>
             </table>
+        </div>
+
+        <div class="card-footer clearfix">
+            <ul class="pagination pagination-sm m-0 float-right">
+                <li class="page-item" :class="{ disabled: dataPagination.current_page === 1 }">
+                    <a class="page-link" href="#"
+                        @click="getDataTransactionPagination(dataPagination.current_page - 1)"> «
+                    </a>
+                </li>
+
+                <li v-for="page in dataPagination.last_page" :key="page" class="page-item"
+                    :class="{ active: page === dataPagination.current_page }">
+                    <a class="page-link" href="#" @click="getDataTransactionPagination(page)"> {{ page }} </a>
+                </li>
+
+                <li class="page-item" :class="{ disabled: dataPagination.current_page === dataPagination.last_page }">
+                    <a class="page-link" href="#"
+                        @click="getDataTransactionPagination(dataPagination.current_page + 1)">»</a>
+                </li>
+            </ul>
         </div>
     </div>
 </template>
@@ -99,7 +121,8 @@ export default {
             form: {
                 user_id: '',
                 sender_name: '',
-                file: null
+                page: 1,
+                limit: 50
             },
         }
     },
@@ -115,17 +138,20 @@ export default {
         ...mapActions('routing', ['getRoutingLists']),
         ...mapMutations(['CLEAR_ERRORS']),
 
-        onSelectSender() {
+        async onSelectSender() {
             if (this.selectedSender) {
-                this.form.user_id = this.selectedSender.user_id;
-                this.form.sender_name = this.selectedSender.sender_name;
-                /* this.getDataMessageTemp({
-                    user_id: this.form.user_id
-                }); */
+                this.form.user_id = await this.selectedSender.user_id;
+                this.form.sender_name = await this.selectedSender.sender_name;
+                await this.getDataTransaction(this.form);
             } else {
                 this.form.user_id = "";
                 this.form.sender_name = "";
             }
+        },
+
+        async getDataTransactionPagination(page) {
+            this.form.page = await page;
+            await this.getDataTransaction(this.form);
         },
 
         onFileChange(e) {

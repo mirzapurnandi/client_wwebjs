@@ -27,7 +27,7 @@ const mutations = {
 const actions = {
     getDataTransaction({ commit }, payload) {
         return new Promise((resolve, reject) => {
-            api.get("admin/transaction", payload)
+            api.get(`admin/transaction`, { params: payload })
                 .then((response) => {
                     commit("ASSIGN_DATA_TRANSACTION", response.data.result);
                     resolve(response.data);
