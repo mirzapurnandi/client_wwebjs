@@ -75,15 +75,16 @@
                         <td><span v-html="val.content"></span></td>
                         <td>{{ val.status_code }}</td>
                         <td class="text-right">
-                            <a class="btn btn-info btn-sm" href="#">
-                                <i class="fas fa-pencil-alt">
+                            <a class="btn btn-info btn-sm" href="javascript:;"
+                                @click="viewDetail(val.id_transaction, val.user_id)">
+                                <i class="fas fa-eye">
                                 </i>
-                                Edit
+                                Info
                             </a>&nbsp;
-                            <a class="btn btn-danger btn-sm" href="#">
-                                <i class="fas fa-trash">
+                            <a class="btn btn-success btn-sm" href="javascript:;" @click="trySend(val.id_transaction)">
+                                <i class="fas fa-repeat">
                                 </i>
-                                Delete
+                                Repeat
                             </a>
                         </td>
                     </tr>
@@ -141,12 +142,12 @@ export default {
 
     computed: {
         ...mapState(['errors', 'processing']),
-        ...mapState('transaction', ['dataTransactions', 'dataPagination']),
+        ...mapState('transaction', ['dataTransactions', 'dataPagination', 'detailTransaction', 'dataSender']),
         ...mapGetters('routing', ['dataRoutings'])
     },
 
     methods: {
-        ...mapActions('transaction', ['getDataTransaction']),
+        ...mapActions('transaction', ['getDataTransaction', 'getDataTransactionDetail', 'trySendTransactionDetail']),
         ...mapActions('routing', ['getRoutingLists']),
         ...mapMutations(['CLEAR_ERRORS']),
 
@@ -171,6 +172,35 @@ export default {
 
         filtering() {
             this.getDataTransaction(this.form);
+        },
+
+        async viewDetail(id_transaction, user_id) {
+            await this.getDataTransactionDetail({
+                id_transaction,
+                user_id
+            }).then((result) => {
+                console.log(result);
+            });
+        },
+
+        async trySend(id_transaction) {
+            if (confirm("🚨 Apakah Anda yakin ingin melakukan Pengiriman ulang?")) {
+                await this.trySendTransactionDetail({ id_transaction: id_transaction }).then((result) => {
+                    this.$swal({
+                        position: "top-end",
+                        icon: "success",
+                        title: result.message,
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                }).catch((err) => {
+                    this.$swal({
+                        icon: "error",
+                        title: "Oops...",
+                        text: err.data.message ? err.data.message : "Something went wrong!",
+                    });
+                });
+            }
         }
     }
 }
