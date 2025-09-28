@@ -1,13 +1,13 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:4000/api",
+    baseURL: import.meta.env.VITE_API_URL,
     headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
         Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
-    withCredentials: true
+    withCredentials: true,
 });
 
 // api.get("/sanctum/csrf-cookie");

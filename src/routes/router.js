@@ -25,6 +25,18 @@ let routes = [
         path: "/:pathMatch(.*)*",
         component: NotFound,
     },
+    {
+        path: "/logout",
+        name: "logout",
+        beforeEnter: async (to, from, next) => {
+            try {
+                await store.dispatch("auth/signOut"); // memanggil action logout di auth.store.js
+            } catch (error) {
+                console.error("Logout failed", error);
+            }
+            next("/"); // redirect ke login atau halaman lain
+        },
+    },
 ];
 
 routes = routes.concat(routeAdmin);
